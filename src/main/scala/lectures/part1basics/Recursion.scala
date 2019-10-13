@@ -31,5 +31,47 @@ object Recursion extends App {
 
   println(anotherFactorial(5000))
 
+ //when you need loops use tail recursion
+  /**
+    * 1. Concatenate a string n times
+    * 2. IsPrime function tail recursive
+    * 3. Fibonacci function, tail recursive
+    */
+
+
+    @tailrec
+    def concatenateTailrec(aString: String, n:Int, accmulator: String) : String = {
+      if(n <= 0) accmulator
+      else concatenateTailrec(aString, n-1 , aString + accmulator)
+    }
+
+    println(concatenateTailrec("hello", 4, ""))
+
+    def isPrime(n: Int) : Boolean = {
+      @tailrec
+      def isPrimeTialrec(t: Int, isStillPrime: Boolean) : Boolean = {
+        if(!isStillPrime) false
+        else if(t <= 1 ) true
+        else isPrimeTialrec(t-1, n % t != 0 && isStillPrime)
+      }
+
+      isPrimeTialrec(n/2,true)
+    }
+
+  println(isPrime(3))
+  println(isPrime(4))
+  println(isPrime(37))
+
+  def fibonacci(n: Int) : Int = {
+    @tailrec
+   def fibonacciTailrec(i: Int , last: Int, nextToLast: Int) : Int = {
+     if(i >= n) last
+     else fibonacciTailrec(i + 1, last + nextToLast, last)
+   }
+    if (n <= 2) 1
+    else fibonacciTailrec(2,1,1)
+  }
+
+  println(fibonacci(10))
 
 }
