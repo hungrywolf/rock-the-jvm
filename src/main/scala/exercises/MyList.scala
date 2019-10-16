@@ -18,6 +18,11 @@ abstract class MyList[+A] {
   // polymorphic call
   override def toString: String = s"[${printElements}]"
 
+  def map[B](transformer: MyTransformer[A,B]) : MyList[B]
+  def flatMap[B](transformer: MyTransformer[A, MyList[B]]): MyList[B]
+  def filter(predicate: MyPredicate[A]): MyList[A]
+  def ++[B >: A](list: MyList[B]): MyList[B]
+
 }
 
 object Empty extends MyList[Nothing] {
@@ -26,6 +31,10 @@ object Empty extends MyList[Nothing] {
   def isEmpty : Boolean = true
   def add[B >: Nothing](element: B) : MyList[B] =  new Cons(element, Empty)
   def printElements: String = ""
+
+  def map[B](transformer: MyTransformer[Nothing,B]) : MyList[B] = Empty
+  def flatMap[B](transformer: MyTransformer[Nothing, MyList[B]]): MyList[B] = Empty
+  def filter(predicate: MyPredicate[Nothing]): MyList[Nothing] = Empty
 }
 
 class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
@@ -38,6 +47,41 @@ class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
       s" ${h}"
     } else s"${h}  ${t.printElements}"
   }
+
+  /**
+    * [1,2,3].filter(n % 2 == 0) =
+    * [2,3].filter(n % 2 == 0) =
+    *  = new Cons(2, [3].filter(n %2 = 0
+    *  = new Cons(2, Empty.filter(n %2 = 0
+    *  = new Cons(2, Empty
+    */
+  def filter(predicate: MyPredicate[A]): MyList[A] = {
+    if(predicate.test(h)) new Cons(h,t.filter(predicate))
+    else t.filter(predicate)
+  }
+
+  /**
+    * [1,2,3].map(n * 2)
+    *   = new Cons(2,[2,3].map(n * 2)
+    *   = new Cons(2,new Cons(4,[3].map(n * 2)
+    *   = new Cons(2,new Cons(4,new Cons(6, Empty.map(n * 2
+    *   = new Cons(2,new Cons(4,new Cons(6, Empty
+    */
+  def map[B](transformer: MyTransformer[A,B]) : MyList[B] = {
+    new Cons(transformer.trsnform(h), t.map(transformer))
+  }
+
+  def flatMap[B](transformer: MyTransformer[A, MyList[B]]): MyList[B] = {
+    new Cons(transformer.trsnform(h), t)
+  }
+}
+
+trait MyPredicate[-T] {
+  def test(elem: T): Boolean
+}
+
+trait MyTransformer[-A,B] {
+  def trsnform(elem: A): B
 }
 
 object ListTest extends App {
@@ -54,6 +98,17 @@ object ListTest extends App {
   val list5:MyList[Int] = new Cons(4,list4)
   println(list5.tail.head)
   println(list5.toString)
+
+
+  println(list5.map(new MyTransformer[Int,Int] {
+    override def trsnform(elem: Int): Int = {
+      elem * 2
+    }
+  }).toString)
+
+  println(list5.filter(new MyPredicate[Int] {
+    override def test(elem: Int): Boolean = elem % 2 == 0
+  }).toString)
 
 }
 
