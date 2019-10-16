@@ -1,8 +1,12 @@
 package playgroud;
 
+import java.util.ArrayList;
+
 public class JavaPlayground {
     public static void main(String[] args) {
+
         System.out.println(Person.N_EYES);
+
     }
 }
 

@@ -25,7 +25,7 @@ abstract class MyList[+A] {
 
 }
 
-object Empty extends MyList[Nothing] {
+case object Empty extends MyList[Nothing] {
   def head : Nothing = throw new NoSuchElementException
   def tail : MyList[Nothing] = throw new NoSuchElementException
   def isEmpty : Boolean = true
@@ -35,9 +35,10 @@ object Empty extends MyList[Nothing] {
   def map[B](transformer: MyTransformer[Nothing,B]) : MyList[B] = Empty
   def flatMap[B](transformer: MyTransformer[Nothing, MyList[B]]): MyList[B] = Empty
   def filter(predicate: MyPredicate[Nothing]): MyList[Nothing] = Empty
+  def ++[B >: Nothing](list: MyList[B]): MyList[B] = list
 }
 
-class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
+case class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
   def head : A = h
   def tail : MyList[A] = t
   def isEmpty : Boolean = false
@@ -71,8 +72,24 @@ class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
     new Cons(transformer.trsnform(h), t.map(transformer))
   }
 
+  /**
+    *[1,2].flatMap(n => [n, n + 1]
+    * [1,2] ++ [2].flatMap[n => n +1
+    * [1,2] ++ [2,3] ++ Empty
+    */
   def flatMap[B](transformer: MyTransformer[A, MyList[B]]): MyList[B] = {
-    new Cons(transformer.trsnform(h), t)
+    transformer.trsnform(h) ++ t.flatMap(transformer)
+  }
+
+  /**
+    * [1,2] ++ [3,4,5]
+    * = new Cons(1, [2] ++ [3,4,5]
+    * = new Cons(1,new Cons(2, Emprty ++ [3,4,5]
+    * = new Cons(1,2 ++ [3,4,5]
+    * = new Cons(1, new Cons(2,new Cons(3, new Cons(4, new Cons(6 ,Empty
+    */
+  def ++[B >: A](list: MyList[B]): MyList[B] = {
+    new Cons(h, t ++ list)
   }
 }
 
@@ -98,6 +115,7 @@ object ListTest extends App {
   val list5:MyList[Int] = new Cons(4,list4)
   println(list5.tail.head)
   println(list5.toString)
+  val list6 = list5
 
 
   println(list5.map(new MyTransformer[Int,Int] {
@@ -109,6 +127,16 @@ object ListTest extends App {
   println(list5.filter(new MyPredicate[Int] {
     override def test(elem: Int): Boolean = elem % 2 == 0
   }).toString)
+
+  println((list5 ++ list).toString)
+
+  println(list5.flatMap(new MyTransformer[Int,MyList[Int]] {
+    override def trsnform(elem: Int): MyList[Int] = {
+      new Cons(elem, new Cons(elem + 1, Empty))
+    }
+  }).toString)
+
+  println(list5 == list6)
 
 }
 
