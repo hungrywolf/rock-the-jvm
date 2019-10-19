@@ -57,6 +57,50 @@ object Exceptions extends App {
    */
 
   // OOM
-  // val array = Array.ofDim(Int.MaxValue)
+  val array = Array.ofDim(Int.MaxValue)
+
+  //SO
+  def infinte : Int = 1+ infinte
+  val noLimit = infinte
+
+  class OverflowException extends RuntimeException
+  class UnderflowException extends RuntimeException
+  class MathCalculationException extends RuntimeException("Division by 0")
+  object PocketCalculater {
+    def add(x:Int, y: Int) = {
+      val result = x + y
+
+      if(x > 0 && y > 0 && result < 0 ) throw new OverflowException
+      else if(x < 0 && y < 0 && result > 0 ) throw new UnderflowException
+      else result
+    }
+
+    def sub(x:Int, y: Int) = {
+      val result = x - y
+
+      if(x > 0 && y < 0 && result < 0 ) throw new OverflowException
+      else if(x < 0 && y > 0 && result > 0 ) throw new UnderflowException
+      else result
+    }
+
+    def multi(x:Int, y: Int) = {
+      val result = x * y
+
+      if(x > 0 && y > 0 && result < 0 ) throw new OverflowException
+      else if(x < 0 && y < 0 && result < 0 ) throw new OverflowException
+      else if(x > 0 && y < 0 && result > 0 ) throw new UnderflowException
+      else if(x < 0 && y < 0 && result > 0 ) throw new UnderflowException
+      else result
+    }
+
+    def div(x:Int, y: Int) = {
+      if(y == 0 ) throw new MathCalculationException
+      else x/y
+    }
+  }
+
+  println(PocketCalculater.add(Int.MaxValue, 10))
+  println(PocketCalculater.div(2, 0))
+
 
 }
