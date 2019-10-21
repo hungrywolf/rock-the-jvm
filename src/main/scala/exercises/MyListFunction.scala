@@ -117,8 +117,16 @@ object ListTestFunction extends App {
     }
   }).toString)
 
+  println(list5.map(elem => {
+      elem * 2
+  }).toString)
+
   println(list5.filter(new Function1[Int,Boolean] {
     override def apply(elem: Int): Boolean = elem % 2 == 0
+  }).toString)
+
+  println(list5.filter(elem =>  {
+    elem % 2 == 0
   }).toString)
 
   println((list5 ++ list).toString)
@@ -128,6 +136,12 @@ object ListTestFunction extends App {
       new ConsFunction(elem, new ConsFunction(elem + 1, EmptyFunction))
     }
   }).toString)
+
+  println(list5.flatMap(elem => {
+      new ConsFunction(elem, new ConsFunction(elem + 1, EmptyFunction))
+  }).toString)
+
+
 
   println(list5 == list6)
 
