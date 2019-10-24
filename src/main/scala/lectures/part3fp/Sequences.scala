@@ -14,8 +14,13 @@ object Sequences extends App {
   println(aSequence.sorted)
 
   // Ranges
-  val aRange: Seq[Int] = 1 until 10
-  aRange.foreach(println)
+  println("===========Until=============")
+  val untilRange: Seq[Int] = 1 until 10
+  untilRange.foreach(println)
+
+  println("===========To================")
+  val toRange: Seq[Int] = 1 to 10
+  toRange.foreach(println)
 
   (1 to 10).foreach(x => println("Hello"))
 
