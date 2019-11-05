@@ -51,6 +51,10 @@ object PatternMatching extends App {
     case  n if n % 2 == 0 => true
     case _ => false
   }
+
+  println(x)
+  println(isEven)
+
   // WHY?!
   val isEvenCond = if (x % 2 == 0) true else false // ?!
   val isEvenNormal = x % 2 == 0
